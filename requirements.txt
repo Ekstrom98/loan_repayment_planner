@@ -1,0 +1,7 @@
+streamlit
+requests
+streamlit_lottie
+pandas
+datetime
+matplotlib.pyplot
+plotly.express
