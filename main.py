@@ -57,8 +57,8 @@ with st.container():
     with left_column:
         start_date = st.date_input("Startdatum för återbetalning",datetime.date(2022, 1, 1))
     with right_column:
-        months_overview = st.slider("Hur många månader framåt vill du se?", 1, 120,12)
-
+        months_overview = st.number_input("Hur många månader framåt vill du se?", step = 1, min_value = 1)
+        
 # ---- DATA ---- 
 data = dataframe_creation(bank_loan = bank_loan, down_payment = down_payment, other_loan = other_loan, 
                    amortization_rate = amortization_rate, interest_rate = interest_rate,
@@ -116,7 +116,7 @@ with st.container():
     
     col1, col2, col3 = st.columns(3)
     col1.metric(label = "Genomsnittlig ränta/månad", value = str(avg_interest) + " SEK", delta=str(max_mean_interest_diff) + " SEK från maximalt betald ränta")
-    col2.metric(label = "Genomsnittlig amortering/månad", value = str(avg_amortization) + " SEK", delta=max_mean_amortization_diff)
+    col2.metric(label = "Genomsnittlig amortering/månad", value = str(avg_amortization) + " SEK")
     col3.metric(label = "Genomsnittlig lön kvar/månad", value = str(avg_salary_left) + " SEK")
 
 with st.container():
