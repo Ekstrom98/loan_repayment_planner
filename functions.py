@@ -17,7 +17,7 @@ def dataframe_creation(bank_loan = 0, down_payment = 0, other_loan = 0,
     amortization = (amortization_rate/100)/12 * original_bank_loan
     net_salary = salary * (100-tax)/100
     salary_left = net_salary - (amortization + interest + payback_other)
-    total_payed = down_payment + payback_other + amortization
+    total_payed = down_payment
     current_date = start_date
 
     
@@ -28,7 +28,6 @@ def dataframe_creation(bank_loan = 0, down_payment = 0, other_loan = 0,
     df.loc[0, 'salary_left'] = salary_left
     df.loc[0, 'total_payed'] = total_payed
     df.loc[0, 'date'] = start_date
-
     
     for i in range(months_overview):
         bank_loan = bank_loan - df.loc[i, 'amortization']
@@ -63,4 +62,5 @@ def dataframe_creation(bank_loan = 0, down_payment = 0, other_loan = 0,
         df.loc[i+1, 'salary_left'] = salary_left
         df.loc[i+1, 'total_payed'] = total_payed
         df.loc[i+1, 'date'] = current_date
+
     return df
