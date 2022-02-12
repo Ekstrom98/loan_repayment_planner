@@ -6,6 +6,7 @@ import datetime
 import matplotlib.pyplot as plt
 import plotly.express as px
 from functions import *
+# amortering utgår från ursprungslånet alltid
 
 st.set_page_config(page_title="Lånekoll", page_icon=":tada:", layout="wide")
 
@@ -33,20 +34,20 @@ with st.container():
     # ---- INCOME ----
     with left_column:
         st.header("Inkomst (SEK)")
-        salary = st.number_input("Lön (brutto)", step = 500, min_value = 0)
+        salary = st.number_input("Månadslön (brutto)", step = 500, min_value = 0)
         tax = st.number_input("Skatt (%)", step = 1, min_value = 0)
         net_salary_header = salary * (1-tax/100)
         st.subheader("= " + str(round(net_salary_header)) + " SEK (netto)")
     # ---- LOAN ----
     with right_column:
-        st.header("Lån")
+        st.header("Bostadslån")
         bank_loan = st.number_input("Banklån (SEK)", step = 100000, min_value = 0)
-        down_payment = st.number_input("Kontantinsats", step = 10000, min_value = 0)
+        down_payment = st.number_input("Redan betalt", step = 10000, min_value = 0)
         down_payment_start = down_payment
         amortization_rate = st.number_input("Amortering (%)", step = 0.01, min_value = 0.0)
         interest_rate = st.number_input("Ränta (%)", step = 0.01, min_value = 0.0)
         other_loan = st.number_input("Övrigt lån (SEK)", step = 10000, min_value = 0)
-        payback_other = st.number_input("Övrig återbetalning per månad (SEK)", step = 500, min_value = 0) 
+        payback_other = st.number_input("Återbetalning av övrigt lån per månad (SEK)", step = 500, min_value = 0) 
 
 # ---- TIME ---- 
 with st.container():
@@ -96,11 +97,12 @@ with st.container():
 with st.container():
     last_date_string = str(pd.to_datetime(data.loc[0,'date'] + pd.DateOffset(months=months_overview)).to_period('M'))
     st.subheader("Ägarandelar efter " + str(months_overview) + " månader (" + last_date_string + ")")
-    
-    ownership = (data["total_payed"].iloc[-1] / 2800000) * 100
-    not_owned = (1 - data[ "total_payed"].iloc[-1] / 2800000) * 100
-    asfig = px.pie(values=[ownership, not_owned], names = ['Min andel', 'Andel jag ej äger'], color = ['blue','red'])
-    st.plotly_chart(asfig, use_container_width=True)
+    real_estate_value = st.number_input(label="Bostadens anskaffningsvärde", step=10000, min_value=0)
+    if(real_estate_value > 0):
+        ownership = (data["total_payed"].iloc[-1] / real_estate_value) * 100
+        not_owned = (1 - data[ "total_payed"].iloc[-1] / real_estate_value) * 100
+        asfig = px.pie(values=[ownership, not_owned], names = ['Min andel', 'Andel jag ej äger'], color = ['blue','red'])
+        st.plotly_chart(asfig, use_container_width=True)
 
 with st.container():
     st.write("---")
