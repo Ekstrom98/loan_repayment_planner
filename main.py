@@ -41,13 +41,19 @@ with st.container():
     # ---- LOAN ----
     with right_column:
         st.header("Bostadslån")
-        bank_loan = st.number_input("Banklån (SEK)", step = 100000, min_value = 0)
-        down_payment = st.number_input("Redan betalt", step = 10000, min_value = 0)
+        real_estate_value = st.number_input(label="Bostadens anskaffningsvärde", step=10000, min_value=0)
+        bank_loan = st.number_input("Kvar av banklån (SEK)", step = 100000, min_value = 0)
+        down_payment = st.number_input("Hur mycket har du redan betalat av?", step = 10000, min_value = 0)
         down_payment_start = down_payment
         amortization_rate = st.number_input("Amortering (%)", step = 0.01, min_value = 0.0)
         interest_rate = st.number_input("Ränta (%)", step = 0.01, min_value = 0.0)
         other_loan = st.number_input("Övrigt lån (SEK)", step = 10000, min_value = 0)
         payback_other = st.number_input("Återbetalning av övrigt lån per månad (SEK)", step = 500, min_value = 0) 
+        if((real_estate_value - (bank_loan + down_payment + other_loan)) != 0):
+            st.warning("Siffrorna verkar inte gå ihop! Bostadens anskaffningsvärde bör motsvara " + 
+                       "det totala lånade beloppet plus din egna insats.")
+        else:
+            st.success("Siffrorna stämmer överens!")
 
 # ---- TIME ---- 
 with st.container():
@@ -58,7 +64,7 @@ with st.container():
         start_date = st.date_input("Startdatum för återbetalning",datetime.date(2022, 1, 1))
     with right_column:
         months_overview = st.number_input("Hur många månader framåt vill du se?", step = 1, min_value = 1)
-        
+
 # ---- DATA ---- 
 data = dataframe_creation(bank_loan = bank_loan, down_payment = down_payment, other_loan = other_loan, 
                    amortization_rate = amortization_rate, interest_rate = interest_rate,
@@ -97,7 +103,6 @@ with st.container():
 with st.container():
     last_date_string = str(pd.to_datetime(data.loc[0,'date'] + pd.DateOffset(months=months_overview)).to_period('M'))
     st.subheader("Ägarandelar efter " + str(months_overview) + " månader (" + last_date_string + ")")
-    real_estate_value = st.number_input(label="Bostadens anskaffningsvärde", step=10000, min_value=0)
     if(real_estate_value > 0):
         ownership = (data["total_payed"].iloc[-1] / real_estate_value) * 100
         not_owned = (1 - data[ "total_payed"].iloc[-1] / real_estate_value) * 100
