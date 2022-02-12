@@ -11,9 +11,10 @@ def dataframe_creation(bank_loan = 0, down_payment = 0, other_loan = 0,
                        amortization_rate = 0, interest_rate = 0, payback_other = 0, 
                        salary = 0, tax = 0, months_overview = 1, start_date = pd.to_datetime(datetime.datetime.today())):
 
+    original_bank_loan = bank_loan
     df = pd.DataFrame(columns = ['bank_loan', 'other_loan', 'amortization','interest', 'salary_left', 'total_payed', 'date'])
     interest = (interest_rate/100)/12 * bank_loan
-    amortization = (amortization_rate/100)/12 * bank_loan
+    amortization = (amortization_rate/100)/12 * original_bank_loan
     net_salary = salary * (100-tax)/100
     salary_left = net_salary - (amortization + interest + payback_other)
     total_payed = down_payment + payback_other + amortization
@@ -50,7 +51,7 @@ def dataframe_creation(bank_loan = 0, down_payment = 0, other_loan = 0,
             df.loc[i+1, 'other_loan'] = other_loan
         
         
-        amortization = (amortization_rate/100)/12 * bank_loan
+        amortization = (amortization_rate/100)/12 * original_bank_loan
         interest = (interest_rate/100)/12 * bank_loan
         salary_left = net_salary - (amortization + interest + payback_other)
         total_payed = total_payed + amortization
@@ -62,5 +63,4 @@ def dataframe_creation(bank_loan = 0, down_payment = 0, other_loan = 0,
         df.loc[i+1, 'salary_left'] = salary_left
         df.loc[i+1, 'total_payed'] = total_payed
         df.loc[i+1, 'date'] = current_date
-    print("sista amortering: " + str(df['amortization'].iloc[-1]))
     return df
